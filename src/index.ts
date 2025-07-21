@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { mcp } from "./mcp";
+import { mcp } from "./mcp.js";
 
 // Load environment variables like your RETELL_API_KEY
 dotenv.config();
