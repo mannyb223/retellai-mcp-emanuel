@@ -1,56 +1,31 @@
-#!/usr/bin/env node
-
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { registerAllTools } from "./tools/index.js";
-import { createRetellClient } from "./client.js";
-
+import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
+import { mcp } from "./mcp";
+
+// Load environment variables like your RETELL_API_KEY
 dotenv.config();
 
-function createMcpServer() {
-  const retellApiKey = process.env.RETELL_API_KEY;
-  if (!retellApiKey) {
-    throw new Error("RETELL_API_KEY environment variable is required");
-  }
+// Initialize the express web server application
+const app = express();
 
-  const retellClient = createRetellClient(retellApiKey);
+// Middleware setup
+app.use(cors()); // Allows other websites (like your GPT) to call this server
+app.use(express.json()); // Allows the server to understand JSON requests
 
-  const mcpServer = new McpServer({
-    name: "Retell MCP",
-    version: "0.1.0",
-    capabilities: [],
-  });
+// Health check route for Render to confirm the server is running
+app.get("/", (req, res) => {
+  res.status(200).send("OK - Retell MCP Web Server is running.");
+});
 
-  registerAllTools(mcpServer, retellClient);
+// The main MCP endpoint that your GPT will use
+app.use("/mcp", mcp);
 
-  return mcpServer;
-}
+// Use the port provided by Render's environment, or 8000 if running locally
+const PORT = process.env.PORT || 8000;
 
-async function main() {
-  try {
-    const mcpServer = createMcpServer();
+// Listen on 0.0.0.0 to be accessible in Render's cloud environment
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is running and listening for web requests on port ${PORT}`);
+});
 
-    const transport = new StdioServerTransport();
-    await mcpServer.connect(transport);
-
-    setupShutdownHandler(mcpServer);
-  } catch (err) {
-    console.error("Error starting MCP server:", err);
-    process.exit(1);
-  }
-}
-
-function setupShutdownHandler(mcpServer: McpServer) {
-  process.on("SIGINT", async () => {
-    try {
-      await mcpServer.close();
-      process.exit(0);
-    } catch (err) {
-      console.error("Error shutting down MCP server:", err);
-      process.exit(1);
-    }
-  });
-}
-
-main();
