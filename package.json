@@ -1,33 +1,27 @@
 {
   "name": "@abhaybabbar/retellai-mcp-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "main": "build/index.js",
   "scripts": {
-    "build": "tsc && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "prepare": "npm run build",
-    "watch": "tsc --watch",
-    "inspector": "npx @modelcontextprotocol/inspector build/index.js"
+    "build": "tsc",
+    "start": "node build/index.js"
   },
-  "keywords": [],
-  "author": "abhaybabbar",
-  "license": "ISC",
-  "description": "RetellAi MCP Server",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.11.0",
-    "dotenv": "^16.5.0",
-    "retell-sdk": "^4.28.0"
+    "dotenv": "^16.4.5",
+    "retell-sdk": "^4.28.0",
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
   },
-  "bin": {
-    "@abhaybabbar/retellai-mcp-server": "build/index.js"
+  "devDependencies": {
+    "@types/node": "^20.14.2",
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "typescript": "^5.4.5"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/abhaybabbar/retellai-mcp-server.git"
-  },
-  "bugs": {
-    "url": "https://github.com/abhaybabbar/retellai-mcp-server/issues"
-  },
-  "homepage": "https://github.com/abhaybabbar/retellai-mcp-server#readme"
+  }
 }
